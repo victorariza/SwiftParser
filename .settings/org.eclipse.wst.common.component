@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
     <wb-module deploy-name="SwiftParser">
-        <wb-resource deploy-path="/" source-path="/src"/>
         <wb-resource deploy-path="/" source-path="/resources"/>
         <wb-resource deploy-path="/" source-path="/test"/>
+        <wb-resource deploy-path="/" source-path="/src/main"/>
+        <wb-resource deploy-path="/" source-path="/src/resources"/>
+        <wb-resource deploy-path="/" source-path="/src/test"/>
+        <wb-resource deploy-path="/" source-path="/src"/>
         <property name="java-output-path" value="/SwiftParser/build/classes"/>
     </wb-module>
 </project-modules>

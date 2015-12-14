@@ -54,9 +54,9 @@ public class SwiftMT7XXParser {
 
 		File[] files = dir.listFiles(new FilenameFilter() {
 			public boolean accept(File dir, String filename) {
-				return filename.endsWith(".obk");
+				return filename.endsWith(".obk") || filename.endsWith(".olt");
 			}
-		});
+		});			
 
 		for (int i = 0; i < files.length; i++) {			
 			messageList.put(files[i].getName(), readSwiftMessage(files[i]));
@@ -118,14 +118,39 @@ public class SwiftMT7XXParser {
 		}
 
 		HashMap<String, String> fields = new HashMap<String, String>();
-
-		ArrayList<String> fourthBlocks = parseBlocks(swiftMessage).get(4);
+			
+		HashMap<Integer, ArrayList<String>> blocks = parseBlocks(swiftMessage);			
+				
+		//Get the buyer bank from block 1:
+		ArrayList<String> firstBlocks = blocks.get(1);		
+		String bankBlock1 = firstBlocks.get(0).substring(3, 11);
+		
+		//Get the seller bank from block 2:
+		ArrayList<String> secondBlocks = blocks.get(2);
+		String bankBlock2 = "NONE";			
+		
+		if (secondBlocks.get(0).length()>=22){		
+			bankBlock2 = secondBlocks.get(0).substring(14, 22);
+		}
+		
+		String buyerBank = bankBlock1;
+		String sellerBank = bankBlock2;
+		
+		// "I" Means input (sent by BBVA) and "O" means output (received by BBVA) 
+		String inputOutput = secondBlocks.get(0).substring(0, 1);		
+		if (inputOutput.equals("O")){					
+			buyerBank = bankBlock2;
+			sellerBank = bankBlock1;
+		}
+		
+		
+		ArrayList<String> fourthBlocks = blocks.get(4);
 		for (Iterator<String> it = fourthBlocks.iterator(); it.hasNext();) {
 			String block = it.next();
 			fields.putAll(parseFields(block));
 		}
 
-		SwiftMT7XX mt7XX = new SwiftMT7XX(type, fileName, fields);
+		SwiftMT7XX mt7XX = new SwiftMT7XX(type, inputOutput, fileName, fields, buyerBank, sellerBank);
 
 		return mt7XX;
 
@@ -216,10 +241,11 @@ public class SwiftMT7XXParser {
 
 		FileWriter out = new FileWriter(path);
 
-		try {
-
+		try {			 
+			
 			/* Print the header*/
-			String line = "TYPE" + COMMA_SEPARATOR + "FILE_NAME";			
+			
+			String line = "FOLDER" + COMMA_SEPARATOR + "TYPE" + COMMA_SEPARATOR + "FILE_NAME" + COMMA_SEPARATOR + "INPUT" + COMMA_SEPARATOR + "BUYER_BANK" + COMMA_SEPARATOR + "SELLER_BANK";						 
 			
 			for (Iterator<String> itFields = OUTPUT_FIELDS.iterator(); itFields.hasNext();) {
 				line += COMMA_SEPARATOR;
@@ -235,7 +261,7 @@ public class SwiftMT7XXParser {
 				SwiftMT7XX message = it.next();
 				line = "";
 
-				line += message.getType() + COMMA_SEPARATOR + message.getFileName();
+				line += path + COMMA_SEPARATOR + message.getType() + COMMA_SEPARATOR + message.getFileName() + COMMA_SEPARATOR + message.getInputOutput() + COMMA_SEPARATOR + message.getBuyerBank() + COMMA_SEPARATOR + message.getSellerBank();
 
 				for (Iterator<String> itFields = OUTPUT_FIELDS.iterator(); itFields.hasNext();) {
 					String field = itFields.next();
