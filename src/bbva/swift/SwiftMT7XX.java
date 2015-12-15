@@ -7,8 +7,8 @@ public class SwiftMT7XX {
 	private MT7TYPE type;
 	private String inputOutput;
 	private String fileName; 
-	private String sellerBank;
-	private String buyerBank;
+	private String advisorBank;
+	private String issuerBank;
 	private HashMap<String, String> fields;	
 	
 	public SwiftMT7XX(MT7TYPE type, String inputOutput, String fileName, HashMap<String, String> fields, String buyerBank, String sellerBank) {
@@ -16,8 +16,8 @@ public class SwiftMT7XX {
 		this.inputOutput = inputOutput;
 		this.fields = fields;
 		this.fileName = fileName;
-		this.sellerBank = sellerBank;
-		this.buyerBank = buyerBank;
+		this.advisorBank = sellerBank;
+		this.issuerBank = buyerBank;
 	}
 	
 	public SwiftMT7XX(MT7TYPE type) {
@@ -48,22 +48,17 @@ public class SwiftMT7XX {
 		return fields.get("20");
 	}
 
-	public String getSellerBank() {
-		return sellerBank;
+	public String getAdvisorBank() {
+		return advisorBank;
 	}
 
-	public String getBuyerBank() {
-		return buyerBank;
+	public String getIssuerBank() {
+		return issuerBank;
 	}
 
 	public String getInputOutput() {
 		return inputOutput;
 	}
-
-	public void setInputOutput(String inputOutput) {
-		this.inputOutput = inputOutput;
-	}
-	
 			
 
 }

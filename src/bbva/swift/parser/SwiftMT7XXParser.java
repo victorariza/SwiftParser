@@ -106,7 +106,7 @@ public class SwiftMT7XXParser {
 	 */
 	public static SwiftMT7XX parseMT7XX(String swiftMessage, String fileName) {
 
-		// format = {:20XXX
+		// format = {2:OXXX
 		// Parse the message type, we want to extract the XXX that is the
 		// message type
 		int beginIndex = swiftMessage.indexOf("{2:") + 4;
@@ -133,16 +133,15 @@ public class SwiftMT7XXParser {
 			bankBlock2 = secondBlocks.get(0).substring(14, 22);
 		}
 		
-		String buyerBank = bankBlock1;
-		String sellerBank = bankBlock2;
+		String issuerBank = bankBlock1;
+		String advisorBank = bankBlock2;
 		
 		// "I" Means input (sent by BBVA) and "O" means output (received by BBVA) 
 		String inputOutput = secondBlocks.get(0).substring(0, 1);		
 		if (inputOutput.equals("O")){					
-			buyerBank = bankBlock2;
-			sellerBank = bankBlock1;
-		}
-		
+			issuerBank = bankBlock2;
+			advisorBank = bankBlock1;
+		}		
 		
 		ArrayList<String> fourthBlocks = blocks.get(4);
 		for (Iterator<String> it = fourthBlocks.iterator(); it.hasNext();) {
@@ -150,7 +149,7 @@ public class SwiftMT7XXParser {
 			fields.putAll(parseFields(block));
 		}
 
-		SwiftMT7XX mt7XX = new SwiftMT7XX(type, inputOutput, fileName, fields, buyerBank, sellerBank);
+		SwiftMT7XX mt7XX = new SwiftMT7XX(type, inputOutput, fileName, fields, issuerBank, advisorBank);
 
 		return mt7XX;
 
@@ -245,7 +244,7 @@ public class SwiftMT7XXParser {
 			
 			/* Print the header*/
 			
-			String line = "FOLDER" + COMMA_SEPARATOR + "TYPE" + COMMA_SEPARATOR + "FILE_NAME" + COMMA_SEPARATOR + "INPUT" + COMMA_SEPARATOR + "BUYER_BANK" + COMMA_SEPARATOR + "SELLER_BANK";						 
+			String line = "FOLDER" + COMMA_SEPARATOR + "TYPE" + COMMA_SEPARATOR + "FILE_NAME" + COMMA_SEPARATOR + "INPUT" + COMMA_SEPARATOR + "ISSUER_BANK" + COMMA_SEPARATOR + "ADVISOR_BANK";						 
 			
 			for (Iterator<String> itFields = OUTPUT_FIELDS.iterator(); itFields.hasNext();) {
 				line += COMMA_SEPARATOR;
@@ -261,7 +260,7 @@ public class SwiftMT7XXParser {
 				SwiftMT7XX message = it.next();
 				line = "";
 
-				line += path + COMMA_SEPARATOR + message.getType() + COMMA_SEPARATOR + message.getFileName() + COMMA_SEPARATOR + message.getInputOutput() + COMMA_SEPARATOR + message.getBuyerBank() + COMMA_SEPARATOR + message.getSellerBank();
+				line += path + COMMA_SEPARATOR + message.getType() + COMMA_SEPARATOR + message.getFileName() + COMMA_SEPARATOR + message.getInputOutput() + COMMA_SEPARATOR + message.getIssuerBank() + COMMA_SEPARATOR + message.getAdvisorBank();
 
 				for (Iterator<String> itFields = OUTPUT_FIELDS.iterator(); itFields.hasNext();) {
 					String field = itFields.next();
